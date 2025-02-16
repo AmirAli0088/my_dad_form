@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فرم ارسال اطلاعات</title>
+</head>
+<body>
+    <h2>ارسال اطلاعات</h2>
+    <form method="post">
+        <label>
+            <input type="text" name="first_name" placeholder="نام" required>
+        </label>
+        <label>
+            <input type="text" name="last_name" placeholder="نام خانوادگی" required>
+        </label>
+        <label>
+            <input type="number" name="phone_number" placeholder="شماره تماس" required>
+        </label>
+        <label>
+            <input type="email" name="email_address" placeholder="آدرس ایمیل" required>
+        </label>
+        <button type="submit">ارسال</button>
+    </form>
+
+    <h3>لیست کاربران ثبت‌شده:</h3>
+    <ul>
+        {% for user in users %}
+            <li>{{ user.first_name }} {{ user.last_name }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
