@@ -51,7 +51,7 @@ def index():
 
         return "اطلاعات شما ثبت شد و ارسال گردید!"
 
-    return render_template("index.html", users=users)
+    return render_template("index2.html", users=users)
 
 
 def send_email(first_name, last_name, father_name, melli_code, phone_number, land_line, province, city, district,
