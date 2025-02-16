@@ -4,9 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>فرم ارسال اطلاعات</title>
+    <style>
+        body { font-family: Arial, sans-serif; direction: rtl; text-align: center; }
+        form { max-width: 400px; margin: auto; background: #f9f9f9; padding: 20px; border-radius: 10px; }
+        input { width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; }
+        button { width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #218838; }
+        table { width: 80%; margin: auto; border-collapse: collapse; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    </style>
 </head>
 <body>
-    <h2>ارسال اطلاعات</h2>
+    <h2>لطفا مشخصات خود را وارد کنید</h2>
     <form method="post">
         <label>
             <input type="text" name="first_name" placeholder="نام" required>
@@ -15,19 +24,40 @@
             <input type="text" name="last_name" placeholder="نام خانوادگی" required>
         </label>
         <label>
+            <input type="text" name="father_name" placeholder="نام پدر" required>
+        </label>
+        <label>
+            <input type="number" name="melli_code" placeholder="کد ملی" required>
+        </label>
+        <label>
             <input type="number" name="phone_number" placeholder="شماره تماس" required>
         </label>
         <label>
-            <input type="email" name="email_address" placeholder="آدرس ایمیل" required>
+            <input type="number" name="land_line" placeholder="تلفن ثابت" required>
+        </label>
+        <label>
+            <strong>آدرس دقیق</strong>
+        </label>
+        <label>
+            <input type="text" name="province" placeholder="استان" required>
+        </label>
+        <label>
+            <input type="text" name="city" placeholder="شهر" required>
+        </label>
+        <label>
+            <input type="text" name="district" placeholder="محله" required>
+        </label>
+        <label>
+            <input type="text" name="street" placeholder="خیابان" required>
+        </label>
+        <label>
+            <input type="text" name="alley" placeholder="کوچه" required>
+        </label>
+        <label>
+            <input type="text" name="plaque" placeholder="پلاک" required>
         </label>
         <button type="submit">ارسال</button>
+        <button type="reset" style="background: #dc3545;">ریست</button>
     </form>
-
-    <h3>لیست کاربران ثبت‌شده:</h3>
-    <ul>
-        {% for user in users %}
-            <li>{{ user.first_name }} {{ user.last_name }}</li>
-        {% endfor %}
-    </ul>
 </body>
 </html>
