@@ -53,7 +53,7 @@ def index():
         if data['phone_number_2'] and data['phone_number_1'] == data['phone_number_2']:
             return "خطا: شماره تماس اول و شماره تماس دوم نباید یکسان باشند!"
         if not data['land_line'].isdigit() or not (8 <= len(data['land_line']) <= 11):
-            return "خطا: تلفن ثابت باید بین ۸ تا ۱۱ رقم عددی باشد!"
+            return "خطا: تلفن ثابت باید ۱۱ رقم عددی باشد!"
 
         if not check_internet():
             return "خطا: اتصال اینترنت برقرار نیست! لطفا اینترنت خود را بررسی کنید."
