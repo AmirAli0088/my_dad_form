@@ -11,6 +11,7 @@
         button { width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; }
         button:hover { background: #218838; }
         .error { color: red; font-size: 12px; display: none; }
+        .hint { color: gray; font-size: 12px; display: block; }
         #datetime { font-size: 16px; font-weight: bold; margin-bottom: 10px; }
     </style>
     <script>
@@ -21,37 +22,12 @@
             }
             const errorElement = document.getElementById(input.name + "-error");
             if (input.value.length < minLength) {
-                errorElement.innerText = "مقدار وارد شده باید " + minLength + " رقم باشد.";
+                errorElement.innerText = "مقادیر وارد شده باید " + minLength + " رقم باشد.";
                 errorElement.style.display = "block";
             } else {
                 errorElement.style.display = "none";
             }
         }
-
-        function validateForm(event) {
-            let valid = true;
-            const fields = document.querySelectorAll("input[required]");
-            fields.forEach(field => {
-                const errorElement = document.getElementById(field.name + "-error");
-                if (!field.value.trim()) {
-                    errorElement.innerText = "لطفا این فیلد را پر کنید.";
-                    errorElement.style.display = "block";
-                    valid = false;
-                }
-            });
-            if (!valid) {
-                event.preventDefault();
-            }
-        }
-
-        function checkInternet() {
-            if (!navigator.onLine) {
-                alert("❌ خطا: اتصال اینترنت برقرار نیست! لطفا اینترنت خود را بررسی کنید.");
-            }
-        }
-        window.addEventListener("load", checkInternet);
-        window.addEventListener("offline", () => alert("❌ اتصال به اینترنت قطع شد!"));
-        window.addEventListener("online", () => alert("✅ اینترنت متصل شد!"));
     </script>
 </head>
 <body>
@@ -59,38 +35,43 @@
     <p id="description">لطفا فرم زیر را دقیق کامل کنید<br>در صورت نقص در موارد وارد شده فرم قابل ارسال نمی باشد.<br>توجه داشته باشید که این اطلاعات کاملا محرمانه باقی خواهد ماند</p>
     <p id="datetime"></p>
 
-    <form method="post" onsubmit="validateForm(event)">
+    <form method="post">
         <label>
-            <input type="text" name="first_name" placeholder="نام" required>
+            <input type="text" name="first_name" placeholder="نام" required minlength="3">
+            <span class="hint">حداقل ۳ کاراکتر</span>
             <span class="error" id="first_name-error"></span>
         </label>
         <label>
-            <input type="text" name="last_name" placeholder="نام خانوادگی" required>
+            <input type="text" name="last_name" placeholder="نام خانوادگی" required minlength="3">
+            <span class="hint">حداقل ۳ کاراکتر</span>
             <span class="error" id="last_name-error"></span>
         </label>
         <label>
-            <input type="text" name="father_name" placeholder="نام پدر" required>
+            <input type="text" name="father_name" placeholder="نام پدر" required minlength="3">
+            <span class="hint">حداقل ۳ کاراکتر</span>
             <span class="error" id="father_name-error"></span>
         </label>
         <label>
             <input type="number" name="melli_code" placeholder="کد ملی" required oninput="enforceLength(this, 10, 10)">
+            <span class="hint">باید دقیقا ۱۰ رقم باشد</span>
             <span class="error" id="melli_code-error"></span>
         </label>
         <label>
             <input type="number" name="phone_number_1" placeholder="شماره تماس اول (09123456789)" required oninput="enforceLength(this, 11, 11)">
+            <span class="hint">باید دقیقا ۱۱ رقم باشد</span>
             <span class="error" id="phone_number_1-error"></span>
         </label>
         <label>
-            <input type="number" name="phone_number_2" placeholder="شماره تماس دوم (09123456789)" oninput="enforceLength(this, 11, 11)">
+            <input type="number" name="phone_number_2" placeholder="شماره تماس دوم (09123456781)" oninput="enforceLength(this, 11, 11)">
+            <span class="hint">در صورت وجود، باید ۱۱ رقم باشد</span>
             <span class="error" id="phone_number_2-error"></span>
         </label>
         <label>
-            <input type="number" name="land_line" placeholder="تلفن ثابت به همراه کد شهر" required oninput="enforceLength(this, 8, 11)">
+            <input type="number" name="land_line" placeholder="تلفن ثابت با کد شهر" required oninput="enforceLength(this, 11, 11)">
+            <span class="hint">دقیقا ۱۱ رقم باشد</span>
             <span class="error" id="land_line-error"></span>
         </label>
-        <label>
-            <strong>آدرس دقیق</strong>
-        </label>
+        <label>آدرس دقیق</label>
         <label>
             <input type="text" name="province" placeholder="استان" required>
             <span class="error" id="province-error"></span>
