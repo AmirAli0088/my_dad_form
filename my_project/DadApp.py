@@ -23,6 +23,10 @@ def is_valid_number(value, length):
     return value.isdigit() and len(value) == length
 
 
+def is_valid_text(value, min_length=3):
+    return len(value) >= min_length
+
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -34,12 +38,20 @@ def index():
         if any(not data[field] for field in required_fields):
             return "خطا: لطفا تمام فیلدهای ضروری را پر کنید!"
 
+        if not is_valid_text(data['first_name']):
+            return "خطا: نام باید حداقل ۳ کاراکتر باشد!"
+        if not is_valid_text(data['last_name']):
+            return "خطا: نام خانوادگی باید حداقل ۳ کاراکتر باشد!"
+        if not is_valid_text(data['father_name']):
+            return "خطا: نام پدر باید حداقل ۳ کاراکتر باشد!"
         if not is_valid_number(data['melli_code'], 10):
             return "خطا: کد ملی باید دقیقا ۱۰ رقم عددی باشد!"
         if not is_valid_number(data['phone_number_1'], 11):
             return "خطا: شماره تماس اول باید ۱۱ رقم عددی باشد!"
         if data['phone_number_2'] and not is_valid_number(data['phone_number_2'], 11):
             return "خطا: شماره تماس دوم باید ۱۱ رقم عددی باشد!"
+        if data['phone_number_2'] and data['phone_number_1'] == data['phone_number_2']:
+            return "خطا: شماره تماس اول و شماره تماس دوم نباید یکسان باشند!"
         if not data['land_line'].isdigit() or not (8 <= len(data['land_line']) <= 11):
             return "خطا: تلفن ثابت باید بین ۸ تا ۱۱ رقم عددی باشد!"
 
@@ -59,22 +71,20 @@ def send_email(data):
         return
 
     receiver_email = SENDER_EMAIL
-    message_content = (
-        f"ثبت اطلاعات جدید:\n"
-        f"نام: {data['first_name']}\n"
-        f"نام خانوادگی: {data['last_name']}\n"
-        f"نام پدر: {data['father_name']}\n"
-        f"کد ملی: {data['melli_code']}\n"
-        f"شماره تماس ۱: {data['phone_number_1']}\n"
-        f"شماره تماس ۲: {data['phone_number_2'] if data['phone_number_2'] else 'ندارد'}\n"
-        f"تلفن ثابت: {data['land_line']}\n"
-        f"استان: {data['province']}\n"
-        f"شهر: {data['city']}\n"
-        f"محله: {data['district']}\n"
-        f"خیابان: {data['street']}\n"
-        f"کوچه: {data['alley']}\n"
-        f"پلاک: {data['plaque']}\n"
-    )
+    message_content = (f"ثبت اطلاعات جدید:"
+                       f"\nنام: {data['first_name']}"
+                       f"\nنام خانوادگی: {data['last_name']}"
+                       f"\nنام پدر: {data['father_name']}"
+                       f"\nکد ملی: {data['melli_code']}"
+                       f"\nشماره تماس ۱: {data['phone_number_1']}"
+                       f"\nشماره تماس ۲: {data['phone_number_2'] if data['phone_number_2'] else 'ندارد'}"
+                       f"\nتلفن ثابت: {data['land_line']}"
+                       f"\nاستان: {data['province']}"
+                       f"\nشهر: {data['city']}"
+                       f"\nمحله: {data['district']}"
+                       f"\nخیابان: {data['street']}"
+                       f"\nکوچه: {data['alley']}"
+                       f"\nپلاک: {data['plaque']}\n")
 
     message = MIMEText(message_content)
     message['Subject'] = 'ثبت اطلاعات جدید'
