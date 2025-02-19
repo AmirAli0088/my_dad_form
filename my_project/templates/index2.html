@@ -7,15 +7,32 @@
     <style>
         body { font-family: Arial, sans-serif; direction: rtl; text-align: center; }
         form { max-width: 400px; margin: auto; background: #f9f9f9; padding: 20px; border-radius: 10px; }
-        input { width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; }
+        input { width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; text-align: center; }
         button { width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; }
         button:hover { background: #218838; }
-        table { width: 80%; margin: auto; border-collapse: collapse; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        #description { font-size: 14px; color: gray; margin-bottom: 15px; }
+        #datetime { font-size: 16px; font-weight: bold; margin-bottom: 10px; }
     </style>
+    <script>
+        function updateDateTime() {
+            const now = new Date();
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            document.getElementById('datetime').innerText = new Intl.DateTimeFormat('fa-IR', options).format(now);
+        }
+        setInterval(updateDateTime, 1000);
+
+        function enforceLength(input, maxLength) {
+            if (input.value.length > maxLength) {
+                input.value = input.value.slice(0, maxLength);
+            }
+        }
+    </script>
 </head>
 <body>
-    <h2>لطفا مشخصات خود را وارد کنید</h2>
+    <h2><strong>ثبت اطلاعات متقاضیان خرید از دفتر مصالح فروشی دوستان</strong></h2>
+    <p id="description">لطفا فرم زیر را دقیق کامل کنید<br>در صورت نقص در موارد وارد شده فرم قابل ارسال نمی باشد.<br>توجه داشته باشید که این اطلاعات کاملا محرمانه باقی خواهد ماند</p>
+    <p id="datetime"></p>
+
     <form method="post">
         <label>
             <input type="text" name="first_name" placeholder="نام" required>
@@ -27,13 +44,16 @@
             <input type="text" name="father_name" placeholder="نام پدر" required>
         </label>
         <label>
-            <input type="number" name="melli_code" placeholder="کد ملی" required>
+            <input type="number" name="melli_code" placeholder="کد ملی" required pattern="\d{10}" oninput="enforceLength(this, 10)">
         </label>
         <label>
-            <input type="number" name="phone_number" placeholder="شماره تماس" required>
+            <input type="number" name="phone_number_1" placeholder="شماره تماس اول" required pattern="\d{11}" oninput="enforceLength(this, 11)">
         </label>
         <label>
-            <input type="number" name="land_line" placeholder="تلفن ثابت" required>
+            <input type="number" name="phone_number_2" placeholder="شماره تماس دوم" pattern="\d{11}" oninput="enforceLength(this, 11)">
+        </label>
+        <label>
+            <input type="number" name="land_line" placeholder="تلفن ثابت" required pattern="\d{8,11}" oninput="enforceLength(this, 11)">
         </label>
         <label>
             <strong>آدرس دقیق</strong>
@@ -54,7 +74,7 @@
             <input type="text" name="alley" placeholder="کوچه" required>
         </label>
         <label>
-            <input type="text" name="plaque" placeholder="پلاک" required>
+            <input type="number" name="plaque" placeholder="پلاک" required>
         </label>
         <button type="submit">ارسال</button>
         <button type="reset" style="background: #dc3545;">ریست</button>
