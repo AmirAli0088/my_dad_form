@@ -10,22 +10,48 @@
         input { width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; text-align: center; }
         button { width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; }
         button:hover { background: #218838; }
-        #description { font-size: 14px; color: gray; margin-bottom: 15px; }
+        .error { color: red; font-size: 12px; display: none; }
         #datetime { font-size: 16px; font-weight: bold; margin-bottom: 10px; }
     </style>
     <script>
-        function updateDateTime() {
-            const now = new Date();
-            const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-            document.getElementById('datetime').innerText = new Intl.DateTimeFormat('fa-IR', options).format(now);
-        }
-        setInterval(updateDateTime, 1000);
-
-        function enforceLength(input, maxLength) {
+        function enforceLength(input, minLength, maxLength) {
+            input.value = input.value.replace(/[^0-9]/g, '');
             if (input.value.length > maxLength) {
                 input.value = input.value.slice(0, maxLength);
             }
+            const errorElement = document.getElementById(input.name + "-error");
+            if (input.value.length < minLength) {
+                errorElement.innerText = "مقدار وارد شده باید " + minLength + " رقم باشد.";
+                errorElement.style.display = "block";
+            } else {
+                errorElement.style.display = "none";
+            }
         }
+
+        function validateForm(event) {
+            let valid = true;
+            const fields = document.querySelectorAll("input[required]");
+            fields.forEach(field => {
+                const errorElement = document.getElementById(field.name + "-error");
+                if (!field.value.trim()) {
+                    errorElement.innerText = "لطفا این فیلد را پر کنید.";
+                    errorElement.style.display = "block";
+                    valid = false;
+                }
+            });
+            if (!valid) {
+                event.preventDefault();
+            }
+        }
+
+        function checkInternet() {
+            if (!navigator.onLine) {
+                alert("❌ خطا: اتصال اینترنت برقرار نیست! لطفا اینترنت خود را بررسی کنید.");
+            }
+        }
+        window.addEventListener("load", checkInternet);
+        window.addEventListener("offline", () => alert("❌ اتصال به اینترنت قطع شد!"));
+        window.addEventListener("online", () => alert("✅ اینترنت متصل شد!"));
     </script>
 </head>
 <body>
@@ -33,48 +59,61 @@
     <p id="description">لطفا فرم زیر را دقیق کامل کنید<br>در صورت نقص در موارد وارد شده فرم قابل ارسال نمی باشد.<br>توجه داشته باشید که این اطلاعات کاملا محرمانه باقی خواهد ماند</p>
     <p id="datetime"></p>
 
-    <form method="post">
+    <form method="post" onsubmit="validateForm(event)">
         <label>
             <input type="text" name="first_name" placeholder="نام" required>
+            <span class="error" id="first_name-error"></span>
         </label>
         <label>
             <input type="text" name="last_name" placeholder="نام خانوادگی" required>
+            <span class="error" id="last_name-error"></span>
         </label>
         <label>
             <input type="text" name="father_name" placeholder="نام پدر" required>
+            <span class="error" id="father_name-error"></span>
         </label>
         <label>
-            <input type="number" name="melli_code" placeholder="کد ملی" required pattern="\d{10}" oninput="enforceLength(this, 10)">
+            <input type="number" name="melli_code" placeholder="کد ملی" required oninput="enforceLength(this, 10, 10)">
+            <span class="error" id="melli_code-error"></span>
         </label>
         <label>
-            <input type="number" name="phone_number_1" placeholder="شماره تماس اول" required pattern="\d{11}" oninput="enforceLength(this, 11)">
+            <input type="number" name="phone_number_1" placeholder="شماره تماس اول (09123456789)" required oninput="enforceLength(this, 11, 11)">
+            <span class="error" id="phone_number_1-error"></span>
         </label>
         <label>
-            <input type="number" name="phone_number_2" placeholder="شماره تماس دوم" pattern="\d{11}" oninput="enforceLength(this, 11)">
+            <input type="number" name="phone_number_2" placeholder="شماره تماس دوم (09123456789)" oninput="enforceLength(this, 11, 11)">
+            <span class="error" id="phone_number_2-error"></span>
         </label>
         <label>
-            <input type="number" name="land_line" placeholder="تلفن ثابت" required pattern="\d{8,11}" oninput="enforceLength(this, 11)">
+            <input type="number" name="land_line" placeholder="تلفن ثابت به همراه کد شهر" required oninput="enforceLength(this, 8, 11)">
+            <span class="error" id="land_line-error"></span>
         </label>
         <label>
             <strong>آدرس دقیق</strong>
         </label>
         <label>
             <input type="text" name="province" placeholder="استان" required>
+            <span class="error" id="province-error"></span>
         </label>
         <label>
             <input type="text" name="city" placeholder="شهر" required>
+            <span class="error" id="city-error"></span>
         </label>
         <label>
             <input type="text" name="district" placeholder="محله" required>
+            <span class="error" id="district-error"></span>
         </label>
         <label>
             <input type="text" name="street" placeholder="خیابان" required>
+            <span class="error" id="street-error"></span>
         </label>
         <label>
             <input type="text" name="alley" placeholder="کوچه" required>
+            <span class="error" id="alley-error"></span>
         </label>
         <label>
             <input type="number" name="plaque" placeholder="پلاک" required>
+            <span class="error" id="plaque-error"></span>
         </label>
         <button type="submit">ارسال</button>
         <button type="reset" style="background: #dc3545;">ریست</button>
