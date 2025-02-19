@@ -1,77 +1,83 @@
 from flask import Flask, render_template, request
 import smtplib
 from email.mime.text import MIMEText
+import socket
 
 app = Flask(__name__)
 
-# تنظیمات ایمیل از متغیرهای محیطی
 SENDER_EMAIL = "meisamabd02@gmail.com"
 EMAIL_PASSWORD = "mfko mwwp chnf rage"
 
-# لیست موقت برای ذخیره اطلاعات کاربران
 users = []
+
+
+def check_internet():
+    try:
+        socket.create_connection(("8.8.8.8", 53), timeout=5)
+        return True
+    except OSError:
+        return False
+
+
+def is_valid_number(value, length):
+    return value.isdigit() and len(value) == length
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        first_name = request.form['first_name']
-        last_name = request.form['last_name']
-        father_name = request.form['father_name']
-        melli_code = request.form['melli_code']
-        phone_number_1 = request.form['phone_number_1']
-        phone_number_2 = request.form['phone_number_2']
-        land_line = request.form['land_line']
-        province = request.form['province']
-        city = request.form['city']
-        district = request.form['district']
-        street = request.form['street']
-        alley = request.form['alley']
-        plaque = request.form['plaque']
+        required_fields = ['first_name', 'last_name', 'father_name', 'melli_code', 'phone_number_1', 'land_line',
+                           'province', 'city', 'district', 'street', 'alley', 'plaque']
+        data = {field: request.form.get(field, '').strip() for field in required_fields}
+        data['phone_number_2'] = request.form.get('phone_number_2', '').strip()
 
-        # ذخیره در لیست موقت
-        users.append({
-            "first_name": first_name,
-            "last_name": last_name,
-            "father_name": father_name,
-            "melli_code": melli_code,
-            "phone_number_1": phone_number_1,
-            "phone_number_2": phone_number_2,
-            "land_line": land_line,
-            "province": province,
-            "city": city,
-            "district": district,
-            "street": street,
-            "alley": alley,
-            "plaque": plaque
-        })
+        if any(not data[field] for field in required_fields):
+            return "خطا: لطفا تمام فیلدهای ضروری را پر کنید!"
 
-        # ارسال ایمیل
-        send_email(first_name, last_name, father_name, melli_code, phone_number_1, phone_number_2, land_line, province,
-                   city, district,
-                   street, alley, plaque)
+        if not is_valid_number(data['melli_code'], 10):
+            return "خطا: کد ملی باید دقیقا ۱۰ رقم عددی باشد!"
+        if not is_valid_number(data['phone_number_1'], 11):
+            return "خطا: شماره تماس اول باید ۱۱ رقم عددی باشد!"
+        if data['phone_number_2'] and not is_valid_number(data['phone_number_2'], 11):
+            return "خطا: شماره تماس دوم باید ۱۱ رقم عددی باشد!"
+        if not data['land_line'].isdigit() or not (8 <= len(data['land_line']) <= 11):
+            return "خطا: تلفن ثابت باید بین ۸ تا ۱۱ رقم عددی باشد!"
 
+        if not check_internet():
+            return "خطا: اتصال اینترنت برقرار نیست! لطفا اینترنت خود را بررسی کنید."
+
+        users.append(data)
+        send_email(data)
         return "اطلاعات شما ثبت شد و ارسال گردید!"
 
     return render_template("index2.html", users=users)
 
 
-def send_email(first_name, last_name, father_name, melli_code, phone_number_1, phone_number_2, land_line, province,
-               city, district,
-               street, alley, plaque):
+def send_email(data):
     if not SENDER_EMAIL or not EMAIL_PASSWORD:
         print("ایمیل و پسورد تنظیم نشده است!")
         return
 
     receiver_email = SENDER_EMAIL
-
-    message = MIMEText(
-        f"نام: {first_name}\nنام خانوادگی: {last_name}\nنام پدر: {father_name}\n"
-        f"کد ملی: {melli_code}\nشماره تماس ۱: {phone_number_1}\nشماره تماس ۲: {phone_number_2}\nتلفن ثابت: {land_line}\n"
-        f"استان: {province}\nشهر: {city}\nمحله: {district}\n"
-        f"خیابان: {street}\nکوچه: {alley}\nپلاک: {plaque}"
+    message_content = (
+        f"ثبت اطلاعات جدید:\n"
+        f"نام: {data['first_name']}\n"
+        f"نام خانوادگی: {data['last_name']}\n"
+        f"نام پدر: {data['father_name']}\n"
+        f"کد ملی: {data['melli_code']}\n"
+        f"شماره تماس ۱: {data['phone_number_1']}\n"
+        f"شماره تماس ۲: {data['phone_number_2'] if data['phone_number_2'] else 'ندارد'}\n"
+        f"تلفن ثابت: {data['land_line']}\n"
+        f"استان: {data['province']}\n"
+        f"شهر: {data['city']}\n"
+        f"محله: {data['district']}\n"
+        f"خیابان: {data['street']}\n"
+        f"کوچه: {data['alley']}\n"
+        f"پلاک: {data['plaque']}\n"
     )
-    message['Subject'] = 'اطلاعات جدید کاربر'
+
+    message = MIMEText(message_content)
+    message['Subject'] = 'ثبت اطلاعات جدید'
     message['From'] = SENDER_EMAIL
     message['To'] = receiver_email
 
