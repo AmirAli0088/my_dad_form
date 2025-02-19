@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request
 import smtplib
 from email.mime.text import MIMEText
-import os
 
 app = Flask(__name__)
 
@@ -20,7 +19,8 @@ def index():
         last_name = request.form['last_name']
         father_name = request.form['father_name']
         melli_code = request.form['melli_code']
-        phone_number = request.form['phone_number']
+        phone_number_1 = request.form['phone_number_1']
+        phone_number_2 = request.form['phone_number_2']
         land_line = request.form['land_line']
         province = request.form['province']
         city = request.form['city']
@@ -35,7 +35,8 @@ def index():
             "last_name": last_name,
             "father_name": father_name,
             "melli_code": melli_code,
-            "phone_number": phone_number,
+            "phone_number_1": phone_number_1,
+            "phone_number_2": phone_number_2,
             "land_line": land_line,
             "province": province,
             "city": city,
@@ -46,7 +47,8 @@ def index():
         })
 
         # ارسال ایمیل
-        send_email(first_name, last_name, father_name, melli_code, phone_number, land_line, province, city, district,
+        send_email(first_name, last_name, father_name, melli_code, phone_number_1, phone_number_2, land_line, province,
+                   city, district,
                    street, alley, plaque)
 
         return "اطلاعات شما ثبت شد و ارسال گردید!"
@@ -54,7 +56,8 @@ def index():
     return render_template("index2.html", users=users)
 
 
-def send_email(first_name, last_name, father_name, melli_code, phone_number, land_line, province, city, district,
+def send_email(first_name, last_name, father_name, melli_code, phone_number_1, phone_number_2, land_line, province,
+               city, district,
                street, alley, plaque):
     if not SENDER_EMAIL or not EMAIL_PASSWORD:
         print("ایمیل و پسورد تنظیم نشده است!")
@@ -63,10 +66,10 @@ def send_email(first_name, last_name, father_name, melli_code, phone_number, lan
     receiver_email = SENDER_EMAIL
 
     message = MIMEText(
-        f"name: {first_name}\nfamily: {last_name}\nfather_name: {father_name}\n"
-        f"melli_code: {melli_code}\nphone: {phone_number}\nland_line: {land_line}\n"
-        f"province: {province}\ncity: {city}\ndistrict: {district}\n"
-        f"street: {street}\nalley: {alley}\nplaque: {plaque}"
+        f"نام: {first_name}\nنام خانوادگی: {last_name}\nنام پدر: {father_name}\n"
+        f"کد ملی: {melli_code}\nشماره تماس ۱: {phone_number_1}\nشماره تماس ۲: {phone_number_2}\nتلفن ثابت: {land_line}\n"
+        f"استان: {province}\nشهر: {city}\nمحله: {district}\n"
+        f"خیابان: {street}\nکوچه: {alley}\nپلاک: {plaque}"
     )
     message['Subject'] = 'اطلاعات جدید کاربر'
     message['From'] = SENDER_EMAIL
